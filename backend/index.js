@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const cookieParser = require('cookie-parser')
 require('dotenv').config()
 require("./db")
 const rootRouter = require('./routes/index.js')
@@ -11,7 +10,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({origin: process.env.URL, credentials:true}));
 
 app.use(express.json());
-app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'))
 
 app.use("/api/v1", rootRouter)

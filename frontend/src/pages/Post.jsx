@@ -1,18 +1,20 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { BASE_URL } from "../url";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/userContext";
 
 export default function Post() {
+  const { user } = useContext(UserContext);
   const { id } = useParams();
   const [post, setPost] = useState();
-  const user = useSelector(state=>state.user)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const fetchData = async () => {
-    const res = await axios.get(`${BASE_URL}/api/v1/blog/${id}`, {withCredentials: true});
+    const res = await axios.get(`${BASE_URL}/api/v1/blog/${id}`, {
+      withCredentials: true,
+    });
     setPost(res.data);
   };
 
@@ -20,8 +22,8 @@ export default function Post() {
     fetchData();
   }, []);
 
-  if(user.currentUser === null){
-    navigate('/login')
+  if (user === null) {
+    navigate("/login");
   }
 
   return (
@@ -42,7 +44,7 @@ export default function Post() {
               </p>
             </div>
           </div>
-          {user.currentUser.info?._id === post?.createdBy._id && (
+          {user._id === post.createdBy._id && (
             <Link to={`/edit/${post._id}`}>
               <div className="">
                 <div className="bg-black text-slate-100 flex justify-center items-center mb-2 w-[28%] md:w-[15%] px-1 mx-auto py-2 rounded-md gap-1">

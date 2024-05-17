@@ -1,24 +1,20 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../url";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  signInFailure,
-  signInStart,
-  signInSuccess,
-} from "../features/user/userSlice";
+import { UserContext } from "../context/userContext";
 
 export default function Login() {
+  const { setUser } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { loading, error } = useSelector((state) => state.user);
 
   const handleLogin = async () => {
     try {
-      dispatch(signInStart());
+      setLoading(false)
       const res = await axios.post(
         `${BASE_URL}/api/v1/user/login`,
         {
@@ -28,17 +24,20 @@ export default function Login() {
         { withCredentials: true }
       );
       if (res.data) {
-        dispatch(signInSuccess(res.data));
+        setError(false);
+        setLoading(false);
+        localStorage.setItem("token", res.data.token);
+        setUser(res.data)
         navigate("/");
       }
     } catch (error) {
-      dispatch(signInFailure(error));
+      setError(error);
       console.log(error);
     }
   };
 
-  if(loading){
-    return <div>Loading....</div>
+  if (loading) {
+    return <div>Loading....</div>;
   }
 
   return (
@@ -67,9 +66,9 @@ export default function Login() {
             Login
           </button>
         </div>
-    
+
         <p className="text-red-500">
-          {error ? error.response.data || "Something went wrong" : ""}
+          {error ? error?.response?.data?.message ||"Something went wrong": ""}
         </p>
 
         <div className="flex gap-1">

@@ -81,9 +81,10 @@ const signinUser = async (req, res) => {
     );
 
     const { password, ...info } = user._doc;
-    return res.cookie("token", token).status(200).json({
+    return res.status(200).json({
       message: "User successfully logged in",
       info,
+      token
     });
   } catch (error) {
     console.error("Error creating user:", error);
@@ -92,7 +93,11 @@ const signinUser = async (req, res) => {
 };
 
 const refetchUser = (req, res) => {
-  const token = req.cookies.token;
+  const token = req.headers.authorization;
+
+  if(!token){
+    return res.status(401).json("Token not found")
+  }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
     if (err) {

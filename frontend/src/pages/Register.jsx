@@ -7,11 +7,10 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate()
-  const [error, setError] = useState(false)
+  const navigate = useNavigate();
+  const [error, setError] = useState(false);
 
   const handleRegister = async () => {
-    
     try {
       const res = await axios.post(`${BASE_URL}/api/v1/user/register`, {
         username,
@@ -19,11 +18,11 @@ export default function Login() {
         password,
       });
       if (res.data) {
-        navigate("/login")
-        setError(false)
+        navigate("/login");
+        setError(false);
       }
     } catch (error) {
-      setError(true)
+      setError(true);
       console.log(error);
     }
   };
@@ -61,7 +60,9 @@ export default function Login() {
             Register
           </button>
         </div>
-        {error && <p className="text-red-500">Something went wrong! Try again</p>}
+        {error && (
+          <p className="text-red-500">Something went wrong! Try again</p>
+        )}
 
         <div className="flex gap-1">
           <p>Already have an account?</p>

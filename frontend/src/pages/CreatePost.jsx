@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { BASE_URL } from "../url";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const modules = {
   toolbar: [
@@ -37,7 +37,7 @@ export default function CreatePost() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleCreateNewPost = async () => {
     try {
@@ -46,7 +46,12 @@ export default function CreatePost() {
       formData.append("description", description);
       formData.append("file", file);
 
-      await axios.post(`${BASE_URL}/api/v1/blog`, formData, {withCredentials: true});
+      const token = localStorage.getItem("token");
+      await axios.post(`${BASE_URL}/api/v1/blog`, formData, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -75,7 +80,7 @@ export default function CreatePost() {
           modules={modules}
           formats={formats}
         />
-        
+
         <button
           onClick={handleCreateNewPost}
           className="bg-black text-white uppercase mt-2 mb-4 p-4 w-full hover:opacity-85"

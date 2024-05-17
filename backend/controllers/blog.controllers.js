@@ -4,13 +4,11 @@ const jwt = require("jsonwebtoken");
 
 const createBlog = async (req, res) => {
   try {
-    if (!req.headers.cookie) {
+    if (!req.headers.authorization) {
       return res.status(401).json({ message: "Token cookie is missing" });
     }
 
-    const token = req.headers.cookie.split("=")[1];
-    console.log(token);
-    console.log(req.headers);
+    const token = req.headers.authorization;
 
     if (!token) {
       return res.status(401).json({ message: "Token is missing" });
@@ -23,21 +21,22 @@ const createBlog = async (req, res) => {
           message: "Token is not valid",
         });
       }
+      const { title, description } = req.body;
+      const file = req.file.path;
+  
+      await Blog.create({
+        title,
+        description,
+        photo: file,
+        createdBy: data._id,
+      });
+  
+      return res.status(200).json({
+        message: "Post created successfully",
+      });
     });
 
-    const { title, description } = req.body;
-    const file = req.file.path;
-
-    await Blog.create({
-      title,
-      description,
-      photo: file,
-      createdBy: data._id,
-    });
-
-    return res.status(200).json({
-      message: "Post created successfully",
-    });
+  
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -74,7 +73,7 @@ const fetchSingleBlog = async (req, res) => {
 };
 
 const updateBlog = async (req, res) => {
-  const token = req.cookies.token;
+  const token = req.cookies.authorization;
   if (!token) {
     return res.status(401).json({
       message: "Token is not authorized",
